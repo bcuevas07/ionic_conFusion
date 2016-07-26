@@ -64,17 +64,17 @@ angular.module('conFusion', ['ionic', 'conFusion.controllers', 'conFusion.servic
     views: {
       'menuContent': {
         templateUrl: 'templates/menu.html',
-        controller: ''
+        controller: 'MenuController'
       }
     }
   })
   
   .state('app.dishdetails', {
-      url: 'menu/:id',
+      url: '/menu/:id',
       views: {
-          'mainContent': {
+          'menuContent': {
               templateUrl: 'templates/dishdetail.html',
-              controller: ''
+              controller: 'DishDetailController'
           }
       }
   });
