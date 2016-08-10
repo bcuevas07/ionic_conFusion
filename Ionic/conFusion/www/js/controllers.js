@@ -153,12 +153,41 @@ angular.module('conFusion.controllers', [])
             };
         }])
 
-        .controller('DishDetailController', ['$scope', '$stateParams', 'menuFactory', 'baseURL', function($scope, $stateParams, menuFactory, baseURL) {
+        .controller('DishDetailController', ['$scope', '$stateParams', 'menuFactory', 'baseURL', '$ionicPopover','favoriteFactory','$ionicModal', function($scope, $stateParams, menuFactory, baseURL, $ionicPopover, favoriteFactory, $ionicModal) {
             
             $scope.baseURL = baseURL;
             $scope.dish = {};
             $scope.showDish = false;
             $scope.message="Loading ...";
+            
+            $ionicModal.fromTemplateUrl('templates/dish-comment.html', {
+                scope: $scope,
+                animation: 'slide-in-up'
+            }).then(function(modal) {
+                $scope.modal = modal;
+            });
+            
+            $scope.openCommentModal = function() {
+                $scope.modal.show();
+            };
+            
+            $scope.closeModal = function() {
+                $scope.modal.hide();
+            };
+            
+            $ionicPopover.fromTemplateUrl('templates/dish-detail-popover.html', {
+                scope: $scope
+            }).then(function(popover){
+                $scope.popover = popover;
+            });
+
+            $scope.openPopover = function($event) {
+                $scope.popover.show($event);
+            };
+
+            $scope.closePopover = function() {
+                $scope.popover.hide();
+            };
             
             $scope.dish = menuFactory.getDishes().get({id:parseInt($stateParams.id,10)})
             .$promise.then(
@@ -170,6 +199,30 @@ angular.module('conFusion.controllers', [])
                                 $scope.message = "Error: "+response.status + " " + response.statusText;
                             }
             );
+            
+            $scope.addFavorite = function() {
+                console.log("index is " + $scope.dish.id);
+                favoriteFactory.addToFavorites($scope.dish.id);
+                $scope.closePopover();
+            };
+            
+            
+            $scope.newComment = {};
+            $scope.addComment = function(comment) {
+                comment.date = new Date().toISOString();
+                console.log(comment);
+                
+                $scope.dish.comments.push(comment);
+                menuFactory.getDishes().update({id:$scope.dish.id},$scope.dish);
+                
+                $scope.commentForm.$setPristine();
+                
+                
+                $scope.newComment = {rating:5, comment:"", author:"", date:""};
+                
+                $scope.closeModal();
+                $scope.modal.hide();
+            };
 
             
         }])
@@ -227,6 +280,7 @@ $ionicLoading, $timeout) {
 
     $scope.baseURL = baseURL;
     $scope.shouldShowDelete = false;
+    
     
     $ionicLoading.show({
         template:'<ion-spinner></ion-spinner> Loading...'
