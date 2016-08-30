@@ -1,10 +1,10 @@
 'use strict';
 
 angular.module('conFusion.services', ['ngResource'])
-        .constant("baseURL","http://10.174.131.213:3000/")
+        .constant("baseURL","http://192.168.1.227:3000/")
         .factory('menuFactory', ['$resource', 'baseURL', function($resource,baseURL) {
     
-            return $resource(baseURL + "dishes/:id", null, {
+            return $resource(baseURL + "dishes/:id", {id:'@id'}, {
                 'update': {
                     method: 'PUT'
                 }
@@ -32,9 +32,12 @@ angular.module('conFusion.services', ['ngResource'])
 
 .factory('favoriteFactory', ['$resource', 'baseURL', '$localStorage', function ($resource, baseURL, $localStorage) {
     var favFac = {};
-    var favorites = $localStorage.getObject('favorites', []);
+    var favorites = $localStorage.getObject('favorites', [{}]);
 
     favFac.addToFavorites = function (index) {
+        if (favorites == null) {
+            favorites = [];
+        }
         for (var i = 0; i < favorites.length; i++) {
             if (favorites[i].id == index)
                 return;
@@ -53,6 +56,7 @@ angular.module('conFusion.services', ['ngResource'])
     }
     
     favFac.getFavorites = function () {
+        favorites = $localStorage.getObject('favorites', [{}]);
         return favorites;
     }
 
