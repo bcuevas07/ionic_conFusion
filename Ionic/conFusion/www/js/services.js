@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('conFusion.services', ['ngResource'])
-        .constant("baseURL","http://192.168.1.227:3000/")
+        .constant("baseURL","http://10.255.249.125:3000/")
         .factory('menuFactory', ['$resource', 'baseURL', function($resource,baseURL) {
     
             return $resource(baseURL + "dishes/:id", {id:'@id'}, {
@@ -32,7 +32,7 @@ angular.module('conFusion.services', ['ngResource'])
 
 .factory('favoriteFactory', ['$resource', 'baseURL', '$localStorage', function ($resource, baseURL, $localStorage) {
     var favFac = {};
-    var favorites = $localStorage.getObject('favorites', [{}]);
+    var favorites = $localStorage.get('favorites', [{}]);
 
     favFac.addToFavorites = function (index) {
         if (favorites == null) {
